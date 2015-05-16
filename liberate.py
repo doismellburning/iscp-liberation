@@ -59,8 +59,8 @@ def get_courses(session, cookies):
         else:
             return None
 
-    pprint.pprint([extract_course(e) for e in html.cssselect(".xlink")])
+    return [extract_course(e) for e in html.cssselect(".xlink")]
 
 s,c = sign_in(username, password)
 
-get_courses(s, c)
+pprint.pprint(get_courses(s, c))
