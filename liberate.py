@@ -11,10 +11,8 @@ LOGIN_URL = "https://www.iscp.ac.uk/Default.aspx"
 
 def sign_in(u, p):
 
-    raw = requests.get(LOGIN_URL)
-
-    session_id = raw.cookies["ASP.NET_SessionId"]
-
+    session = requests.session()
+    raw = session.get(LOGIN_URL)
 
     html = lxml.html.fromstring(raw.text)
 
@@ -36,19 +34,14 @@ def sign_in(u, p):
         "Content-Type": "application/x-www-form-urlencoded",
     }
 
-    cookies = {
-        "ASP.NET_SessionId": session_id,
-    }
-
-    session = requests.session()
-    r = session.post(LOGIN_URL, data=payload, headers=headers, cookies=cookies)
+    r = session.post(LOGIN_URL, data=payload, headers=headers)
 
     assert "unread messages" in r.content
 
-    return session, cookies
+    return session
 
-def get_courses(session, cookies):
-    r = session.get("https://www.iscp.ac.uk/evidence/courselist.aspx", cookies=cookies)
+def get_courses(session):
+    r = session.get("https://www.iscp.ac.uk/evidence/courselist.aspx")
 
     html = lxml.html.fromstring(r.text)
 
@@ -61,6 +54,6 @@ def get_courses(session, cookies):
 
     return [extract_course(e) for e in html.cssselect(".xlink")]
 
-s,c = sign_in(username, password)
+s = sign_in(username, password)
 
-pprint.pprint(get_courses(s, c))
+pprint.pprint(get_courses(s))
