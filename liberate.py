@@ -40,8 +40,6 @@ def sign_in(u, p):
         "ASP.NET_SessionId": session_id,
     }
 
-    pprint.pprint(payload)
-
     session = requests.session()
     r = session.post(LOGIN_URL, data=payload, headers=headers, cookies=cookies)
 
