@@ -47,7 +47,20 @@ def sign_in(u, p):
 
     return session, cookies
 
+def get_courses(session, cookies):
+    r = session.get("https://www.iscp.ac.uk/evidence/courselist.aspx", cookies=cookies)
+
+    html = lxml.html.fromstring(r.text)
+
+    def extract_course(xlink):
+        y = xlink.findall('div')
+        if len(y) > 2:
+            return y[2].text
+        else:
+            return None
+
+    pprint.pprint([extract_course(e) for e in html.cssselect(".xlink")])
+
 s,c = sign_in(username, password)
 
-r = s.get("https://www.iscp.ac.uk/assessments/default.aspx", cookies=c)
-print r.content
+get_courses(s, c)
