@@ -54,6 +54,60 @@ def get_courses(session):
 
     return [extract_course(e) for e in html.cssselect(".xlink")]
 
+
+def upload_course(session):
+    response = session.get("https://www.iscp.ac.uk/evidence/course.aspx")
+
+    html = lxml.html.fromstring(response.text)
+
+    viewstate = html.cssselect("input#__VIEWSTATE")[0].value
+    viewstate_generator = html.cssselect("input#__VIEWSTATEGENERATOR")[0].value
+    viewstate_encrypted = html.cssselect("input#__VIEWSTATEENCRYPTED")[0].value
+    event_validation = html.cssselect("input#__EVENTVALIDATION")[0].value
+
+    payload = {
+        "__EVENTTARGET": "",
+        "__EVENTARGUMENT": "",
+        "__EVENTVALIDATION": event_validation,
+        "__VIEWSTATE": viewstate,
+        "__VIEWSTATEGENERATOR": viewstate_generator,
+        "__VIEWSTATEENCRYPTED": viewstate_encrypted,
+        "ctl00$cphMain$txtDate": "01/01/1970",
+        "ctl00$cphMain$txtEndDate": "",
+        "ctl00$cphMain$drpTitles": 6,  # Other
+        "ctl00$cphMain$txtOtherTitle": "Lorem Ipsum Dolor Sit Amet",
+        "ctl00$cphMain$drpTypes": 0,
+        "ctl00$cphMain$txtOtherType": "",
+        "ctl00$cphMain$txtAwardingBody": "",
+        "ctl00$cphMain$txtFeedback": "",
+        "ctl00$cphMain$txtLearn": "",
+        "ctl00$cphMain$txtImprove": "",
+        "ctl00$cphMain$txtActionPlan": "",
+        "ctl00$cphMain$topicChooser1$hidScrollTop": "",
+        "ctl00$cphMain$topicChooser1$hidTpcExpanded": "True",
+        "ctl00$cphMain$topicChooser1$hidSelectedTopics": "",
+        "ctl00$cphMain$topicChooser1$hdnPopUpShowing": "",
+        "ctl00$cphMain$topicChooser1$hidTab": "",
+        "ctl00$cphMain$btnInsert": "Save Course/seminar",
+        "ctl00$TraineeReport1$download_token_value_id": "17/05/2015 10:29:46",
+        "ctl00$TraineeReport1$txtStartDate": "16/05/2014",
+        "ctl00$TraineeReport1$txtEndDate": "16/05/2015",
+        "ctl00$txtFeedbackComments": "",
+    }
+
+    files = {
+        "ctl00$cphMain$fupControl1": (
+            "eurion.png",
+            open("/Users/kristian/Downloads/EURion.png", "rb"),
+            "image/png",
+        ),
+    }
+
+    r = session.post("https://www.iscp.ac.uk/evidence/course.aspx", data=payload, files=files)
+
+    pprint.pprint(r.text)
+
+
 s = sign_in(username, password)
 
-pprint.pprint(get_courses(s))
+upload_course(s)
