@@ -55,7 +55,7 @@ def get_courses(session):
     return [extract_course(e) for e in html.cssselect(".xlink")]
 
 
-def upload_course(session):
+def upload_course(session, title="Lorem Ipsum", filename="Lorem Ipsum", filepath="/Users/kristian/Downloads/EURion.png"):
     response = session.get("https://www.iscp.ac.uk/evidence/course.aspx")
 
     html = lxml.html.fromstring(response.text)
@@ -75,7 +75,7 @@ def upload_course(session):
         "ctl00$cphMain$txtDate": "01/01/1970",
         "ctl00$cphMain$txtEndDate": "",
         "ctl00$cphMain$drpTitles": 6,  # Other
-        "ctl00$cphMain$txtOtherTitle": "Lorem Ipsum Dolor Sit Amet",
+        "ctl00$cphMain$txtOtherTitle": title,
         "ctl00$cphMain$drpTypes": 0,
         "ctl00$cphMain$txtOtherType": "",
         "ctl00$cphMain$txtAwardingBody": "",
@@ -97,9 +97,9 @@ def upload_course(session):
 
     files = {
         "ctl00$cphMain$fupControl1": (
-            "eurion.png",
-            open("/Users/kristian/Downloads/EURion.png", "rb"),
-            "image/png",
+            filename,
+            open(filepath, "rb"),
+            "image/png",  # FIXME
         ),
     }
 
