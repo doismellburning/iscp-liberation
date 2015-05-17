@@ -108,6 +108,7 @@ def upload_course(session):
     pprint.pprint(r.text)
 
 
-s = sign_in(username, password)
+if __name__ == "__main__":
+    s = sign_in(username, password)
 
-upload_course(s)
+    upload_course(s)
